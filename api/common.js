@@ -1,8 +1,8 @@
 import axios from 'axios';
+import { getCookie } from 'cookies-next';
 
 export const getProfile = async () => {
-  let accessToken = localStorage.getItem('access_token');
-  console.log(accessToken)
+  const accessToken = getCookie('access_token');
   const res = await axios({
     url: 'https://api.spotify.com/v1/me',
     method: 'get',

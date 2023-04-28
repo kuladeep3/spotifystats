@@ -1,3 +1,5 @@
+import axios from 'axios';
+import { setCookie, getCookie } from 'cookies-next';
 const SCOPE = 'user-read-private user-read-email';
 
 export default function Home() {
@@ -31,7 +33,7 @@ export default function Home() {
     const codeVerifier = generateRandomString(128);
     generateCodeChallenge(codeVerifier).then((codeChallenge) => {
       const state = generateRandomString(16);
-      localStorage.setItem('code_verifier', codeVerifier);
+      setCookie('code_verifier', codeVerifier, { maxAge: 60 * 60 });
       let args = new URLSearchParams({
         response_type: 'code',
         client_id: process.env.NEXT_PUBLIC_CLIENT_ID,
@@ -44,14 +46,57 @@ export default function Home() {
 
       window.location = 'https://accounts.spotify.com/authorize?' + args;
     });
-    // router.push(
-    //   `https://accounts.spotify.com/authorize?response_type=code&client_id=${process.env.NEXT_PUBLIC_CLIENT_ID}&scope=${SCOPE}&redirect_uri=${process.env.NEXT_PUBLIC_REDIRECT_URI}`
-    // );
   };
+
   return (
     <main className="homePageMain">
       <h1>Welcome to your Spotify Stats!</h1>
       <button onClick={handleLoginButton}>Sign in to spotify</button>
     </main>
   );
+}
+
+export async function getServerSideProps(context) {
+  const { req, res } = context;
+  const { code, state } = context.query;
+
+  if (code && state) {
+    // Get code verifier
+    const codeVerifier = getCookie('code_verifier', { req, res });
+
+    try {
+      const response = await axios.post(
+        'https://accounts.spotify.com/api/token',
+        {
+          grant_type: 'authorization_code',
+          code: code,
+          redirect_uri: process.env.NEXT_PUBLIC_REDIRECT_URI,
+          client_id: process.env.NEXT_PUBLIC_CLIENT_ID,
+          code_verifier: codeVerifier,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        }
+      );
+      if (response?.status === 200 && response?.data) {
+        response?.data?.access_token &&
+          setCookie('access_token', response.data.access_token, { req, res, maxAge: 60 * 60 });
+        return {
+          redirect: {
+            destination: '/dashboard',
+            permanent: false,
+          },
+        };
+      }
+    } catch (error) {
+      return {
+        notFound: true,
+      };
+    }
+  }
+  return {
+    props: {},
+  };
 }

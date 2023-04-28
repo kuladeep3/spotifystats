@@ -68,6 +68,7 @@ a {
         color: #fffafa;
         cursor: pointer;
         padding: 0.7rem 1rem;
+        width: 100%;
       }
       &.active {
         background-color: rgba(255, 255, 255, 0.04);
@@ -78,4 +79,30 @@ a {
 }
 .rightSideLayout {
   padding: 15px;
+}
+
+.clickable {
+  cursor: pointer;
+}
+.profilePopup {
+  padding: 0.5rem;
+  p {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px
+}
+
+.profileIconParent {
+  .avatarContainer {
+    position: relative;
+  }
+  .popupMenuContainer {
+    position: absolute;
+    right: 0;
+  }
 }
