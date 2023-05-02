@@ -1,8 +1,10 @@
 import axios from 'axios';
 import { setCookie, getCookie } from 'cookies-next';
-const SCOPE = 'user-read-private user-read-email';
+import { useRouter } from 'next/router';
+const SCOPE = 'user-read-private user-read-email user-top-read';
 
-export default function Home() {
+export default function Home({ isLoggedIn }) {
+  const router = useRouter();
   function generateRandomString(length) {
     let text = '';
     let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -48,10 +50,15 @@ export default function Home() {
     });
   };
 
+  const gotoDashboard = () => {
+    router.push('/dashboard');
+  };
+
   return (
     <main className="homePageMain">
       <h1>Welcome to your Spotify Stats!</h1>
-      <button onClick={handleLoginButton}>Sign in to spotify</button>
+      {!isLoggedIn && <button onClick={handleLoginButton}>Sign in to spotify</button>}
+      {isLoggedIn && <button onClick={gotoDashboard}>View stats</button>}
     </main>
   );
 }
@@ -85,7 +92,7 @@ export async function getServerSideProps(context) {
           setCookie('access_token', response.data.access_token, { req, res, maxAge: 60 * 60 });
         return {
           redirect: {
-            destination: '/dashboard',
+            destination: '/dashboard/top-artists',
             permanent: false,
           },
         };
@@ -96,7 +103,8 @@ export async function getServerSideProps(context) {
       };
     }
   }
+  const isLoggedIn = !!getCookie('access_token', { req, res });
   return {
-    props: {},
+    props: { isLoggedIn },
   };
 }

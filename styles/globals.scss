@@ -38,7 +38,7 @@ a {
     font-size: 14px;
     color: #000;
   }
-  @media only screen and (max-width: 600px) {
+  @media only screen and (max-width: 576px) {
     padding: 0 2rem;
   }
 }
@@ -47,6 +47,9 @@ a {
   min-height: 100dvh;
   display: grid;
   grid-template-columns: 1fr 4fr;
+  @media only screen and (max-width: 576px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .headerLayout {
@@ -76,6 +79,9 @@ a {
       }
     }
   }
+  @media only screen and (max-width: 576px) {
+    display: none;
+  }
 }
 .rightSideLayout {
   padding: 15px;
@@ -94,7 +100,7 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px
+  gap: 8px;
 }
 
 .profileIconParent {
@@ -104,5 +110,32 @@ a {
   .popupMenuContainer {
     position: absolute;
     right: 0;
+  }
+}
+
+.chartContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  margin-top: 1rem;
+  border-radius: 10px;
+  height: calc(100dvh - 100px);
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+
+.artistsList {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+  @media only screen and (max-width: 576px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mobileNavbar {
+  margin: 1rem 0;
+  @media only screen and (min-width: 576px) {
+    display: none;
   }
 }
